@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <head>
+        <meta charset="utf-8">
+        <title>Chat</title>
+        <style>
+            html,
+            body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                overflow: hidden;
+                background-color: lightblue;
+            }
+
+            .wrap {
+                width: 100%;
+                height: 100%;
+                background-color: lightblue;
+            }
+
+            #chatWrap {
+                width: 800px;
+                height: 1000px;
+                margin: auto;
+                border: 1px solid gray;
+                background-color: white;
+            }
+
+            #chatView {
+                width: 100%;
+                height: 90%;
+            }
+
+            #sendForm {
+                height: 10%;
+                padding: 5px;
+                border-top: 1px solid gray;
+                text-align: center;
+            }
+
+            #name {
+                width: 20%;
+                height: 70px;
+                font-size: 20px;
+                border-radius: 8px;
+            }
+
+            #message {
+                width: 60%;
+                height: 70px;
+                font-size: 20px;
+                border-radius: 8px;
+            }
+
+            #send {
+                width: 16%;
+                height: 80px;
+                border-radius: 50px;
+                background-color: lightblue;
+            }
+        </style>
+    </head>
+</head>
+
+<body>
+    <div class="wrap">
+        <div id="chatWrap">
+            <div id="chatView"></div>
+            <form id="sendForm" onsubmit="return false">
+                <input type="text" id="name" placeholder="닉네임">
+                <input type="text" id="message" placeholder="메시지를 입력하세요.">
+                <input type="submit" id="send" value="전송">
+            </form>
+        </div>
+    </div>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script>
+        let ws = new WebSocket("ws://localhost:8000/chat");
+
+        $("#chat").on()
+    </script>
+</body>
+
+</html>
