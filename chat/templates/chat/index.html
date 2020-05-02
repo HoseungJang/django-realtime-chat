@@ -37,7 +37,7 @@
                 overflow-y: scroll;
             }
 
-            .newUser {
+            .system {
                 width: 100%;
                 text-align: center;
                 font-size: x-large;
@@ -110,7 +110,7 @@
     <div id="wrap">
         <div id="chatWrap">
             <div id="chatView">
-                <div class="newUser">장호승님이 입장하셨습니다.</div>
+                <div class="system">장호승님이 입장하셨습니다.</div>
                 <div class="chatLine">
                     <label class="nick">장호승</label>
                     <div class="chatLog">
@@ -142,7 +142,7 @@
             const name = getName();
             const ws = new WebSocket("ws://localhost:8000/chat");
             
-            $("#chatView").append(`<div class="newUser">${name}님이 입장하셨습니다.</div>`);
+            $("#chatView").append(`<div class="system">${name}님이 입장하셨습니다.</div>`);
 
             /*ws.onopen((e) => {
                 const data = {
