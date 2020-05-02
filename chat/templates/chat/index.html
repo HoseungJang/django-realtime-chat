@@ -109,17 +109,9 @@
 <body>
     <div id="wrap">
         <div id="chatWrap">
-            <div id="chatView">
-                <div class="system">장호승님이 입장하셨습니다.</div>
-                <div class="chatLine">
-                    <label class="nick">장호승</label>
-                    <div class="chatLog">
-                        안녕하세요?
-                    </div>
-                </div>
-            </div>
+            <div id="chatView"></div>
             <form id="sendForm" onsubmit="return false">
-                <input type="text" id="message" placeholder="메시지를 입력하세요.">
+                <input type="text" id="message" placeholder="메시지를 입력하세요." autocomplete="off">
                 <input type="submit" id="send" value="전송">
             </form>
         </div>
@@ -128,9 +120,9 @@
     <script>
         function getName() {
             while (true) {
-                const input = prompt("닉네임을 입력하세요.\n(2자 이상 10자 미만)");
+                const input = prompt("닉네임을 입력하세요.\n(2자 이상 6자 이하)");
 
-                if (input && input.length < 10 && input.length > 2) {
+                if (input && input.length <= 6 && input.length >= 2) {
                     return input;
                 }
 
@@ -141,29 +133,38 @@
         $(document).ready(() => {
             const name = getName();
             const ws = new WebSocket("ws://localhost:8000/chat");
-            
-            $("#chatView").append(`<div class="system">${name}님이 입장하셨습니다.</div>`);
 
-            /*ws.onopen((e) => {
+            ws.onopen = (e) => {
                 const data = {
-                    type: "newUser",
+                    type: "connect",
                     data: {
                         name
                     }
                 };
 
                 ws.send(JSON.stringify(data));
+                $("#chatView").append(`<div class="system">${name}님이 들어왔습니다.</div>`);
+            };
 
-                $("#chatView").append(`<div class="newUser">${name}님이 입장하셨습니다.</div>`);
-            });
+            ws.onmessage = (e) => {
+                const { type, data } = JSON.parse(e.data);
 
-            ws.onmessage((e) => {
-                const { type, data } = e.data;
+                if (type === "connect") {
+                    $("#chatView").append(`<div class="system">${data.name}님이 들어왔습니다.</div>`);
+                } else if (type === "message") {
+                    const message = `
+                        <div class="chatLine">
+                            <label class="nick">${data.name}</label>
+                            <div class="chatLog">
+                                ${data.message}
+                            </div>
+                        </div>`;
 
-                if (type === "newUser") {
-
+                    $("#chatView").append(message).scrollTop($("#chatView")[0].scrollHeight);
+                } else if (type === 'disconnect') {
+                    $("#chatView").append(`<div class="system">${data.name}님이 나갔습니다.</div>`);
                 }
-            });*/
+            };
 
             $("#sendForm").submit(() => {
                 const data = {
@@ -176,7 +177,14 @@
 
                 ws.send(JSON.stringify(data));
 
-                $("#chatView").append(`<div class="chatLine"><div class="chatLog me">${data.data.message}</div></div>`).scrollTop($("#chatView")[0].scrollHeight);
+                const message = `
+                    <div class="chatLine">
+                        <div class="chatLog me">
+                            ${data.data.message}
+                        </div>
+                    </div>`;
+
+                $("#chatView").append(message).scrollTop($("#chatView")[0].scrollHeight);
                 $("#message").val("");
             });
         });
