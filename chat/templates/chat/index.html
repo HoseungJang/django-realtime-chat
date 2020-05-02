@@ -11,19 +11,19 @@
                 width: 100%;
                 height: 100%;
                 margin: 0;
-                overflow: hidden;
                 background-color: lightblue;
             }
 
             .wrap {
                 width: 100%;
                 height: 100%;
+                overflow: scroll;
                 background-color: lightblue;
             }
 
             #chatWrap {
                 width: 800px;
-                height: 1000px;
+                height: 1200px;
                 margin: auto;
                 border: 1px solid gray;
                 background-color: white;
@@ -32,6 +32,36 @@
             #chatView {
                 width: 100%;
                 height: 90%;
+                overflow-x: hidden;
+                overflow-y: scroll;
+            }
+
+            .chatLine {
+                height: auto;
+                padding: 10px;
+                overflow: hidden;
+                text-align: left;
+            }
+
+            .nick {
+                font-size: xx-large;
+                font-weight: bold;
+                display: block;
+            }
+            
+            .chatLog {
+                max-width: 60%;
+                height: 100%;
+                padding: 10px;
+                font-size: x-large;
+                display: inline-block;
+                word-break: break-all;
+                background-color: coral;
+            }
+
+            .me {
+                float: right;
+                background-color: cornflowerblue;
             }
 
             #sendForm {
@@ -43,21 +73,21 @@
 
             #name {
                 width: 20%;
-                height: 70px;
+                height: 90px;
                 font-size: 20px;
                 border-radius: 8px;
             }
 
             #message {
                 width: 60%;
-                height: 70px;
+                height: 90px;
                 font-size: 20px;
                 border-radius: 8px;
             }
 
             #send {
                 width: 16%;
-                height: 80px;
+                height: 100px;
                 border-radius: 50px;
                 background-color: lightblue;
             }
@@ -68,7 +98,14 @@
 <body>
     <div class="wrap">
         <div id="chatWrap">
-            <div id="chatView"></div>
+            <div id="chatView">
+                <div class="chatLine">
+                    <label class="nick">장호승</label>
+                    <div class="chatLog">
+                        안녕하세요?
+                    </div>
+                </div>
+            </div>
             <form id="sendForm" onsubmit="return false">
                 <input type="text" id="name" placeholder="닉네임">
                 <input type="text" id="message" placeholder="메시지를 입력하세요.">
@@ -78,9 +115,15 @@
     </div>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script>
-        let ws = new WebSocket("ws://localhost:8000/chat");
+        const ws = new WebSocket("ws://localhost:8000/chat");
 
-        $("#chat").on()
+        $(document).ready(() => {
+            $("#sendForm").submit((e) => {
+                const name = $("#name").val();
+                const message = $("#message").val();
+                $("#chatView").append(`<div class="chatLine"><div class="chatLog me">${message}</div></div>`).scrollTop($("#chatView")[0].scrollHeight)
+            })
+        })
     </script>
 </body>
 
