@@ -2,6 +2,7 @@
 <html>
 
 <head>
+
     <head>
         <meta charset="utf-8">
         <title>Chat</title>
@@ -14,7 +15,7 @@
                 background-color: lightblue;
             }
 
-            .wrap {
+            #wrap {
                 width: 100%;
                 height: 100%;
                 overflow: scroll;
@@ -36,6 +37,13 @@
                 overflow-y: scroll;
             }
 
+            .newUser {
+                width: 100%;
+                text-align: center;
+                font-size: x-large;
+                color: darkgray;
+            }
+
             .chatLine {
                 height: auto;
                 padding: 10px;
@@ -44,24 +52,27 @@
             }
 
             .nick {
-                font-size: xx-large;
-                font-weight: bold;
                 display: block;
+                margin-left: 1%;
+                font-size: x-large;
+                font-weight: bold;
+                color: gray;
             }
-            
+
             .chatLog {
                 max-width: 60%;
                 height: 100%;
                 padding: 10px;
-                font-size: x-large;
+                border-radius: 20px;
                 display: inline-block;
                 word-break: break-all;
-                background-color: coral;
+                font-size: x-large;
+                background-color: lightgray;
             }
 
             .me {
                 float: right;
-                background-color: cornflowerblue;
+                background-color: lightblue;
             }
 
             #sendForm {
@@ -79,7 +90,7 @@
             }
 
             #message {
-                width: 60%;
+                width: 80%;
                 height: 90px;
                 font-size: 20px;
                 border-radius: 8px;
@@ -96,9 +107,10 @@
 </head>
 
 <body>
-    <div class="wrap">
+    <div id="wrap">
         <div id="chatWrap">
             <div id="chatView">
+                <div class="newUser">장호승님이 입장하셨습니다.</div>
                 <div class="chatLine">
                     <label class="nick">장호승</label>
                     <div class="chatLog">
@@ -107,7 +119,6 @@
                 </div>
             </div>
             <form id="sendForm" onsubmit="return false">
-                <input type="text" id="name" placeholder="닉네임">
                 <input type="text" id="message" placeholder="메시지를 입력하세요.">
                 <input type="submit" id="send" value="전송">
             </form>
@@ -115,15 +126,60 @@
     </div>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script>
-        const ws = new WebSocket("ws://localhost:8000/chat");
+        function getName() {
+            while (true) {
+                const input = prompt("닉네임을 입력하세요.\n(2자 이상 10자 미만)");
+
+                if (input && input.length < 10 && input.length > 2) {
+                    return input;
+                }
+
+                alert("조건을 지켜 입력해주세요.");
+            }
+        }
 
         $(document).ready(() => {
-            $("#sendForm").submit((e) => {
-                const name = $("#name").val();
-                const message = $("#message").val();
-                $("#chatView").append(`<div class="chatLine"><div class="chatLog me">${message}</div></div>`).scrollTop($("#chatView")[0].scrollHeight)
-            })
-        })
+            const name = getName();
+            const ws = new WebSocket("ws://localhost:8000/chat");
+            
+            $("#chatView").append(`<div class="newUser">${name}님이 입장하셨습니다.</div>`);
+
+            /*ws.onopen((e) => {
+                const data = {
+                    type: "newUser",
+                    data: {
+                        name
+                    }
+                };
+
+                ws.send(JSON.stringify(data));
+
+                $("#chatView").append(`<div class="newUser">${name}님이 입장하셨습니다.</div>`);
+            });
+
+            ws.onmessage((e) => {
+                const { type, data } = e.data;
+
+                if (type === "newUser") {
+
+                }
+            });*/
+
+            $("#sendForm").submit(() => {
+                const data = {
+                    type: "message",
+                    data: {
+                        name,
+                        message: $("#message").val()
+                    }
+                }
+
+                ws.send(JSON.stringify(data));
+
+                $("#chatView").append(`<div class="chatLine"><div class="chatLog me">${data.data.message}</div></div>`).scrollTop($("#chatView")[0].scrollHeight);
+                $("#message").val("");
+            });
+        });
     </script>
 </body>
 
