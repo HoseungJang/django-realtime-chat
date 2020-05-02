@@ -150,7 +150,12 @@
                 const { type, data } = JSON.parse(e.data);
 
                 if (type === "connect") {
-                    $("#chatView").append(`<div class="system">${data.name}님이 들어왔습니다.</div>`);
+                    const html = `
+                        <div class="system">
+                            ${data.name}님이 들어왔습니다.
+                        </div>`;
+
+                    $("#chatView").append(html).scrollTop($("#chatView")[0].scrollHeight);;
                 } else if (type === "message") {
                     const html = `
                         <div class="chatLine">
@@ -162,7 +167,12 @@
 
                     $("#chatView").append(html).scrollTop($("#chatView")[0].scrollHeight);
                 } else if (type === 'disconnect') {
-                    $("#chatView").append(`<div class="system">${data.name}님이 나갔습니다.</div>`);
+                    const html = `
+                        <div class="system">
+                            ${data.name}님이 나갔습니다.
+                        </div>`;
+                    
+                    $("#chatView").append(html).scrollTop($("#chatView")[0].scrollHeight);
                 }
             };
 
