@@ -46,7 +46,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def chat_message(self, event):
-        if self.channel_name != event['senderChannel']:
-            await self.send(
-                text_data=json.dumps(event['data'])
-            )
+        data = event['data']
+
+        if data['type'] != 'disconnect' and self.channel_name == event['senderChannel']:
+            return
+        
+        await self.send(
+            text_data=json.dumps(event['data'])
+        )
