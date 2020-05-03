@@ -130,6 +130,48 @@
             }
         }
 
+        function drawUserEnterAlert(name) {
+            const html = `
+                <div class="system">
+                    ${name}님이 들어왔습니다.
+                </div>`;
+
+            $("#chatView").append(html).scrollTop($("#chatView")[0].scrollHeight);
+        }
+
+        function drawMessage(name, message) {
+            const html = `
+                <div class="chatLine">
+                    <label class="nick">${name}</label>
+                    <div class="chatLog">
+                        ${message}
+                    </div>
+                </div>`;
+
+            $("#chatView").append(html).scrollTop($("#chatView")[0].scrollHeight);
+        }
+
+        function drawMyMessage(message) {
+            const html = `
+                <div class="chatLine">
+                    <div class="chatLog me">
+                        ${message}
+                    </div>
+                </div>`;
+
+            $("#chatView").append(html).scrollTop($("#chatView")[0].scrollHeight);
+            $("#message").val("");
+        }
+
+        function drawUserExitAlert(name) {
+            const html = `
+                <div class="system">
+                    ${name}님이 나갔습니다.
+                </div>`;
+                    
+            $("#chatView").append(html).scrollTop($("#chatView")[0].scrollHeight);
+        }
+
         $(document).ready(() => {
             const name = getName();
             const ws = new WebSocket("ws://localhost:8000/chat");
@@ -143,36 +185,18 @@
                 };
 
                 ws.send(JSON.stringify(data));
-                $("#chatView").append(`<div class="system">${name}님이 들어왔습니다.</div>`);
+                drawUserEnterAlert(name);
             };
 
             ws.onmessage = (e) => {
                 const { type, data } = JSON.parse(e.data);
 
                 if (type === "connect") {
-                    const html = `
-                        <div class="system">
-                            ${data.name}님이 들어왔습니다.
-                        </div>`;
-
-                    $("#chatView").append(html).scrollTop($("#chatView")[0].scrollHeight);;
+                    drawUserEnterAlert(data.name);
                 } else if (type === "message") {
-                    const html = `
-                        <div class="chatLine">
-                            <label class="nick">${data.name}</label>
-                            <div class="chatLog">
-                                ${data.message}
-                            </div>
-                        </div>`;
-
-                    $("#chatView").append(html).scrollTop($("#chatView")[0].scrollHeight);
+                    drawMessage(data.name, data.message);
                 } else if (type === 'disconnect') {
-                    const html = `
-                        <div class="system">
-                            ${data.name}님이 나갔습니다.
-                        </div>`;
-                    
-                    $("#chatView").append(html).scrollTop($("#chatView")[0].scrollHeight);
+                    drawUserExitAlert(data.name);
                 }
             };
 
@@ -186,19 +210,10 @@
                             name,
                             message
                         }
-                    }
+                    };
 
                     ws.send(JSON.stringify(data));
-
-                    const html = `
-                        <div class="chatLine">
-                            <div class="chatLog me">
-                                ${message}
-                            </div>
-                        </div>`;
-
-                    $("#chatView").append(html).scrollTop($("#chatView")[0].scrollHeight);
-                    $("#message").val("");
+                    drawMyMessage(message);
                 }
             });
         });
