@@ -1,7 +1,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 
-
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.channel_layer.group_add(
