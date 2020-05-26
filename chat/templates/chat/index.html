@@ -118,15 +118,19 @@
     </div>
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script>
-        function getName() {
+        function getName(names) {
             while (true) {
                 const input = prompt("닉네임을 입력하세요.\n(2자 이상 6자 이하)");
+                const uniqueCondition = names.indexOf(input) === -1;
+                const lengthCondition = input && input.length <= 6 && input.length >= 2;
 
-                if (input && input.length <= 6 && input.length >= 2) {
+                if (!uniqueCondition) {
+                    alert("중복된 닉네임입니다.")
+                } else if (!lengthCondition) {
+                    alert("조건을 지켜 입력해주세요.");
+                } else {
                     return input;
                 }
-
-                alert("조건을 지켜 입력해주세요.");
             }
         }
 
@@ -168,30 +172,36 @@
                 <div class="system">
                     ${name}님이 나갔습니다.
                 </div>`;
-                    
+
             $("#chatView").append(html).scrollTop($("#chatView")[0].scrollHeight);
         }
 
         $(document).ready(() => {
-            const name = getName();
             const ws = new WebSocket("ws://localhost:8000/chat");
+            let name;
 
             ws.onopen = (e) => {
                 const data = {
-                    type: "connect",
-                    data: {
-                        name
-                    }
+                    type: "names"
                 };
 
                 ws.send(JSON.stringify(data));
-                drawUserEnterAlert(name);
             };
 
             ws.onmessage = (e) => {
                 const { type, data } = JSON.parse(e.data);
 
-                if (type === "connect") {
+                if (type === "names") {
+                    name = getName(data);
+
+                    ws.send(JSON.stringify({
+                        type: "connect",
+                        data: {
+                            name
+                        }
+                    }));
+                    drawUserEnterAlert(name);
+                } else if (type === "connect") {
                     drawUserEnterAlert(data.name);
                 } else if (type === "message") {
                     drawMessage(data.name, data.message);
